@@ -34,7 +34,7 @@ class FormSubmitController extends Controller
         }
 
         /** @var Collection<int, FormSubmit>  */
-        $submits = FormSubmit::whereIn($status, [null, 'reject']);
+        $submits = FormSubmit::whereIn($status, [null, 'rejected']);
 
         return view('submits.index', compact('submits'));
     }
@@ -50,12 +50,30 @@ class FormSubmitController extends Controller
     }
 
     /**
+     * Update an existing resource in storage.
+     */
+    public function update(Request $request, FormSubmit $formSubmit): RedirectResponse
+    {
+        if (auth()->user()->hasRole('hr_coordinator')) {
+            /** @var string */
+            $status = 'hr_coordinator_status';
+        } elseif (auth()->user()->hasRole('hr_manager')) {
+            /** @var string */
+            $status = 'hr_manager_status';
+        }
+
+        $request->validate([$status => 'required|in:accepted,rejected']);
+
+        return back();
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(FormSubmit $formSubmit): RedirectResponse
     {
         $formSubmit->delete();
-        
+
         return back()->with('success', 'The form submit has been deleted successfully');
     }
 }

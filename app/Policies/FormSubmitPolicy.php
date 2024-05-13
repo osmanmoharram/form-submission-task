@@ -19,7 +19,7 @@ class FormSubmitPolicy
             $this->allow();
         }
 
-        return $this->denyWithStatus(403, 'you are not allowed!');
+        return $this->denyWithStatus(403, 'You are not allowed!');
     }
 
     /**
@@ -31,6 +31,18 @@ class FormSubmitPolicy
     }
 
     /**
+     * Determine whether the user can update the model.
+     */
+    public function update(User $user, FormSubmit $formSubmit): Response
+    {
+        if ($user->hasAnyRole(['hr_coordinator', 'hr_manager'])) {
+            $this->allow();
+        }
+
+        return $this->denyWithStatus(403, 'You are not allowed!');
+    }
+
+    /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, FormSubmit $formSubmit): Response
@@ -39,6 +51,6 @@ class FormSubmitPolicy
             $this->allow();
         }
 
-        return $this->denyWithStatus(403, 'you are not allowed!');
+        return $this->denyWithStatus(403, 'You are not allowed!');
     }
 }
