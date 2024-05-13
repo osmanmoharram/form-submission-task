@@ -15,6 +15,12 @@ class FormSubmitController extends Controller
 {
     use AuthorizesRequests;
 
+    // authentication
+    // api
+    // tests
+    // phpstan
+    // views
+
     public function __construct()
     {
         $this->authorizeResource(FormSubmit::class);
