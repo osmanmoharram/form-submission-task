@@ -21,16 +21,13 @@ class FormSubmitController extends Controller
     // phpstan
     // views
 
-    public function __construct()
-    {
-        $this->authorizeResource(FormSubmit::class);
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index(): View
     {
+        $this->authorize('viewAny', FormSubmitController::class);
+
         if (auth()->user()->hasRole('hr_coordinator')) {
             /** @var string */
             $status = 'hr_coordinator_status';
@@ -50,7 +47,11 @@ class FormSubmitController extends Controller
      */
     public function store(FormSubmitRequest $request): RedirectResponse
     {
-        FormSubmit::create($request->validated());
+        $this->authorize('create', FormSubmitController::class);
+
+        FormSubmit::create($request->safe()->merge([
+            'cv' => $request->file('cv')->store()
+        ]));
 
         return back()->with('success', 'Your form has been submitted successfully');
     }
@@ -60,6 +61,8 @@ class FormSubmitController extends Controller
      */
     public function update(Request $request, FormSubmit $formSubmit): RedirectResponse
     {
+        $this->authorize('update', FormSubmitController::class);
+
         if (auth()->user()->hasRole('hr_coordinator')) {
             /** @var string */
             $status = 'hr_coordinator_status';
@@ -78,6 +81,8 @@ class FormSubmitController extends Controller
      */
     public function destroy(FormSubmit $formSubmit): RedirectResponse
     {
+        $this->authorize('delete', FormSubmitController::class);
+
         $formSubmit->delete();
 
         return back()->with('success', 'The form submit has been deleted successfully');

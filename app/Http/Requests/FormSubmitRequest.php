@@ -29,4 +29,11 @@ class FormSubmitRequest extends FormRequest
             'cv' => 'required|file|mimes:pdf'
         ];
     }
+
+    public function attributes(): array
+    {
+        return [
+            'dob' => 'Date of birth'
+        ];
+    }
 }

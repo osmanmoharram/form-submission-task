@@ -23,14 +23,6 @@ class FormSubmitPolicy
     }
 
     /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): Response
-    {
-        return $this->allow();
-    }
-
-    /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, FormSubmit $formSubmit): Response
