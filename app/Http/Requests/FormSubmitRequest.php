@@ -26,7 +26,7 @@ class FormSubmitRequest extends FormRequest
             'dob' => 'required|date',
             'gender' => 'required|string|in:male,female',
             'nationality' => 'required|string|exists:nationalities,name',
-            'cv' => 'required|file|mimes:pdf'
+            'cv' => 'required|file|mimes:pdf|max:2048'
         ];
     }
 

@@ -10,16 +10,25 @@ use Illuminate\Auth\Access\Response;
 class FormSubmitPolicy
 {
     use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): Response
     {
         if ($user->hasAnyRole(['hr_coordinator', 'hr_manager'])) {
-            $this->allow();
+            return $this->allow();
         }
 
         return $this->denyWithStatus(403, 'You are not allowed!');
+    }
+
+    /**
+     * Determine whether the user can create a resource.
+     */
+    public function create(?User $user): Response
+    {
+        return $this->allow();
     }
 
     /**
@@ -28,7 +37,7 @@ class FormSubmitPolicy
     public function update(User $user, FormSubmit $formSubmit): Response
     {
         if ($user->hasAnyRole(['hr_coordinator', 'hr_manager'])) {
-            $this->allow();
+            return $this->allow();
         }
 
         return $this->denyWithStatus(403, 'You are not allowed!');
@@ -40,7 +49,7 @@ class FormSubmitPolicy
     public function delete(User $user, FormSubmit $formSubmit): Response
     {
         if ($user->hasAnyRole(['hr_coordinator', 'hr_manager'])) {
-            $this->allow();
+            return $this->allow();
         }
 
         return $this->denyWithStatus(403, 'You are not allowed!');

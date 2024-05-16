@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
 <div class="w-full h-full bg-no-repeat object-cover"
     style="background-image: url({{ asset('images/children-laying-on-the-ground.jpg') }})">
@@ -34,7 +34,7 @@
 
                     <span class="text-base"> Or </span>
 
-                    <a href="{{ route('home') }}" class="text-base text-[#162753] hover:underline">Submit your form</a>
+                    <a href="{{ route('formSubmits.create') }}" class="text-base text-[#162753] hover:underline">Submit your form</a>
                 </div>
             </div>
         </form>

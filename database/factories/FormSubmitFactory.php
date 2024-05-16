@@ -17,7 +17,13 @@ class FormSubmitFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->name(),
+            'dob' => now()->subYears(30)->toDateString(),
+            'gender' => 'male',
+            'nationality' => 'Saudi',
+            'cv' => $this->faker->file(),
+            'hr_coordinator_approval' => null,
+            'hr_manager_approval' => null
         ];
     }
 }

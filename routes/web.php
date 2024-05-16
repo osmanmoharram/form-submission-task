@@ -1,18 +1,18 @@
 <?php
 
 use App\Http\Controllers\FormSubmitController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::post('/submissions', [FormSubmitController::class, 'store'])->name('submissions.store');
-    Route::get('/', fn () => view('welcome'))->name('home');
+    Route::post('/formSubmits', [FormSubmitController::class, 'store'])->name('formSubmits.store');
+    Route::get('/', [FormSubmitController::class, 'create'])->name('formSubmits.create');
     Route::get('login', fn () => view('auth.login'))->name('login');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
-    Route::resource('submissions', FormSubmitController::class)->except(['create', 'store', 'show', 'edit']);
+    Route::resource('formSubmits', FormSubmitController::class)->only(['index', 'update']);
+    Route::get('/formSubmits/{formSubmit}', [FormSubmitController::class, 'download'])->name('formSubmits.download');
 });
 
 require __DIR__.'/auth.php';

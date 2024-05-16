@@ -36,6 +36,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $casts = [
+        'dob' => 'date'
+    ];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -47,5 +51,16 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getInitialsAttribute()
+    {
+        $nameParts = explode(' ', $this->name);
+
+        $initials = array_reduce($nameParts, function ($carry, $part) {
+            return $carry . strtoupper(substr($part, 0, 1));
+        }, '');
+        
+        return $initials;
     }
 }
