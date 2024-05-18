@@ -28,8 +28,6 @@ class FormSubmitController extends Controller
 {
     use AuthorizesRequests;
 
-    // api
-    // tests
     // phpstan
 
     /**

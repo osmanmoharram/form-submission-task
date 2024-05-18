@@ -1,17 +1,9 @@
-@if (session()->has('success'))
-    <p id="flash" class="w-full text-lg py-5 px-8 rounded bg-green-100 text-green-900">
-        {{ session('success') }}
-    </p>
-@endif
-
-@foreach ($errors->all() as $error)
-    <li>{{ $error }}</li>
-@endforeach
+{{ $slot }}
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var flashMessage = document.getElementById('flash');
+            var flashMessage = document.getElementById('flashMessage');
 
             if (flashMessage) {
                 setTimeout(function() {

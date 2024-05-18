@@ -4,7 +4,7 @@
     style="background-image: url({{ asset('images/children-laying-on-the-ground.jpg') }})">
     <div class="w-screen h-screen bg-white/80 flex items-center justify-center">
         <div class="w-96 flex flex-col items-center justify-center space-y-10">
-            <x-flash />
+            <x-form-flash />
             
             <form class="w-full" action="{{ route('formSubmits.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
@@ -51,7 +51,7 @@
                             <option value="" @selected(old('nationality') == null) disabled>Please select your nationality</option>
                             @foreach ($nationalities as $nationality)
                                 <option value="{{ $nationality->name }}" @selected(old('nationality') == $nationality->name)>
-                                    <img src="{{ asset('images/flags/png/' . strtolower($nationality->code) . '.png') }}" alt="{{ $nationality->name }}">
+                                    <img src="{{ asset('images/flags/png/' . strtolower($nationality->code . '.png')) }}" alt="{{ $nationality->name }}">
                                     <span>{{ $nationality->name }}</span>
                                 </option>
                             @endforeach
@@ -77,13 +77,7 @@
                         </label>
                     </div>
     
-                    <div class="w-full text-left">
-                        <label for="cv"
-                            class="relative w-full cursor-pointer text-[#162753] focus-within:outline-none focus-within:ring-0 hover:underline">
-                            <span>Upload your cv file</span>
-                            <input id="cv" name="cv" type="file" class="sr-only" accept=".pdf" required>
-                        </label>
-                    </div>
+                    <x-upload-button /> 
     
                     <div class="flex flex-col justify-center items-center space-y-5">
                         <button type="submit" class="px-8 py-2 text-lg rounded-sm text-white cursor-pointer bg-[#162753]">
