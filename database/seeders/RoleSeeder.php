@@ -23,8 +23,5 @@ class RoleSeeder extends Seeder
         foreach ($roles as $role) {
             Role::create(['name' => $role]);
         }
-
-        User::where('email', 'osman@example.com')->first()->assignRole('hr_coordinator');
-        User::where('email', 'mohammed@example.com')->first()->assignRole('hr_manager');
     }
 }

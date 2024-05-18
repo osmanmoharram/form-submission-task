@@ -21,7 +21,7 @@ class FormSubmitFactory extends Factory
             'dob' => now()->subYears(30)->toDateString(),
             'gender' => 'male',
             'nationality' => 'Saudi',
-            'cv' => $this->faker->file(),
+            'cv' => \Illuminate\Support\Str::random(10) . '.pdf',
             'hr_coordinator_approval' => null,
             'hr_manager_approval' => null
         ];

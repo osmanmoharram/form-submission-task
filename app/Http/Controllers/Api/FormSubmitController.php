@@ -42,10 +42,10 @@ class FormSubmitController extends Controller
         $this->authorize('create', FormSubmit::class);
 
         FormSubmit::create($request->safe()->merge([
-            'cv' => $request->file('cv')->store('public')
+            'cv' => $request->file('cv')->store('local')
         ])->toArray());
 
-        return response()->json(['success' => 'Your form has been submitted successfully']);
+        return response()->json(['success' => 'Your form has been submitted successfully'], 200);
     }
 
     /**
@@ -59,7 +59,7 @@ class FormSubmitController extends Controller
 
         /** @var User */
         $user = auth()->user();
-
+        
         /** @var string|null */
         $approval = $user->hasRole('hr_coordinator')
             ? 'hr_coordinator_approval'
@@ -68,10 +68,10 @@ class FormSubmitController extends Controller
         if (is_string($approval)) {
             $formSubmit->update([$approval => $request->approval]);
 
-            return response()->json(['success' => 'The form submit has been ' . $request->approval]);
+            return response()->json(['success' => 'The form submit has been ' . $request->approval . ' successfully'], 200);
         }
 
-        return response()->json(['error' => 'There was an error! please if all data is correct and try again']);
+        return response()->json(['error' => 'The form submit is not ' . $request->approval]);
     }
 
     /**

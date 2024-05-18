@@ -12,7 +12,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
     Route::resource('formSubmits', FormSubmitController::class)->only(['index', 'update']);
-    Route::get('/formSubmits/{formSubmit}', [FormSubmitController::class, 'download'])->name('formSubmits.download');
+    Route::get('/formSubmits/report', [FormSubmitController::class, 'showReport'])->name('formSubmits.report');
+    Route::get('/formSubmits/{formSubmit}/download', [FormSubmitController::class, 'download'])->name('formSubmits.download');
 });
 
 require __DIR__.'/auth.php';

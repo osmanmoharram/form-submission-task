@@ -54,4 +54,13 @@ class FormSubmitPolicy
 
         return $this->denyWithStatus(403, 'You are not allowed!');
     }
+
+    public function viewReport(User $user): Response
+    {
+        if ($user->hasRole(['hr_coordinator'])) {
+            return $this->allow();
+        }
+
+        return $this->denyWithStatus(403, 'You are not allowed!');
+    }
 }

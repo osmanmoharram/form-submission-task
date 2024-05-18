@@ -4,15 +4,8 @@
     style="background-image: url({{ asset('images/children-laying-on-the-ground.jpg') }})">
     <div class="w-screen h-screen bg-white/80 flex items-center justify-center">
         <div class="w-96 flex flex-col items-center justify-center space-y-10">
-            @if (session()->has('success'))
-                <p class="w-full py-3 px-4 rounded bg-green-100 text-green-900">
-                    Your form has been sumitted successfully
-                </p>
-            @endif
-
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
+            <x-flash />
+            
             <form class="w-full" action="{{ route('formSubmits.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
     
@@ -27,12 +20,11 @@
                             value="{{ old('name') }}"
                             class="pl-0 w-full peer text-[#162753] bg-transparent placeholder-transparent border-transparent border-b-2 border-b-gray-400/60 focus:outline-none focus:ring-0 focus:border-transparent focus:border-b-2 focus:border-b-[#162753]"
                             placeholder="Name"
+                            required
                         />
     
                         <label for="name"
                             class="absolute text-[#162753] left-0 -top-3.5 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-[#162753] transition-all">Name</label>
-    
-                        @error('name') <p class="text-red-500 text-left text-sm">{{ $message }}</p> @enderror
                     </div>
     
     
@@ -44,19 +36,18 @@
                             value="{{ old('dob') }}"
                             class="pl-0 peer w-full text-[#162753] bg-transparent placeholder-transparent border-transparent border-b-2 border-b-gray-400/60 focus:outline-none focus:ring-0 focus:border-transparent focus:border-b-2 focus:border-b-[#162753]"
                             placeholder="Date of birth"
+                            required
                         />
     
                         <label for="dob"
                             class="absolute text-[#162753] left-0 -top-3.5 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-[#162753] transition-all">
                             Date of birth
                         </label>
-    
-                        @error('dob') <p class="text-red-500 text-left text-sm">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="w-full relative">
                         <select id="nationality" name="nationality"
-                            class="pl-0 peer w-full text-[#162753] bg-transparent placeholder-transparent border-transparent border-b-2 border-b-gray-400/60 focus:outline-none focus:ring-0 focus:border-transparent focus:border-b-2 focus:border-b-[#162753]">
+                            class="pl-0 peer w-full text-[#162753] bg-transparent placeholder-transparent border-transparent border-b-2 border-b-gray-400/60 focus:outline-none focus:ring-0 focus:border-transparent focus:border-b-2 focus:border-b-[#162753]" required>
                             <option value="" @selected(old('nationality') == null) disabled>Please select your nationality</option>
                             @foreach ($nationalities as $nationality)
                                 <option value="{{ $nationality->name }}" @selected(old('nationality') == $nationality->name)>
@@ -70,13 +61,11 @@
                             class="absolute text-[#162753] left-0 -top-3.5 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-[#162753] transition-all">
                             Nationality
                         </label>
-    
-                        @error('nationality') <p class="text-red-500 text-left text-sm">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="w-full relative">
                         <select id="gender" name="gender"
-                            class="pl-0 peer w-full text-[#162753] bg-transparent placeholder-transparent border-transparent border-b-2 border-b-gray-400/60 focus:outline-none focus:ring-0 focus:border-transparent focus:border-b-2 focus:border-b-[#162753]">
+                            class="pl-0 peer w-full text-[#162753] bg-transparent placeholder-transparent border-transparent border-b-2 border-b-gray-400/60 focus:outline-none focus:ring-0 focus:border-transparent focus:border-b-2 focus:border-b-[#162753]" required>
                             <option value="" @selected(old('gender') == null) disabled>Please select your gender</option>
                             <option value="male" @selected(old('gender') == 'male')>Male</option>
                             <option value="female"  @selected(old('gender') == 'female')>Female</option>
@@ -86,17 +75,14 @@
                             class="absolute text-[#162753] left-0 -top-3.5 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-[#162753] transition-all">
                             Gender
                         </label>
-    
-                        @error('gender') <p class="text-red-500 text-left text-sm">{{ $message }}</p> @enderror
                     </div>
     
                     <div class="w-full text-left">
                         <label for="cv"
                             class="relative w-full cursor-pointer text-[#162753] focus-within:outline-none focus-within:ring-0 hover:underline">
                             <span>Upload your cv file</span>
-                            <input id="cv" name="cv" type="file" class="sr-only" accept=".pdf">
+                            <input id="cv" name="cv" type="file" class="sr-only" accept=".pdf" required>
                         </label>
-                        @error('cv') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
                     </div>
     
                     <div class="flex flex-col justify-center items-center space-y-5">

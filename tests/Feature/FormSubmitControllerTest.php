@@ -3,10 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\FormSubmit;
+use App\Models\Nationality;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Http\Testing\File;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
@@ -14,6 +15,8 @@ use Tests\TestCase;
 
 class FormSubmitControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_not_permitted_users_cannot_view_form_submits(): void
     {
         /** @var User */
@@ -39,7 +42,7 @@ class FormSubmitControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertViewIs('formSubmits.index');
-        $response->assertViewHas('formSubmits', fn (Collection $submits) => $submits->count() == $formSubmits->count());
+        $response->assertViewHas('formSubmits', fn (LengthAwarePaginator $submits) => $submits->count() == $formSubmits->count());
     }
 
     public function test_hr_manager_can_view_form_submits(): void
@@ -59,7 +62,7 @@ class FormSubmitControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertViewIs('formSubmits.index');
-        $response->assertViewHas('formSubmits', fn (Collection $submits) => $submits->count() == $formSubmits->count());
+        $response->assertViewHas('formSubmits', fn (LengthAwarePaginator $submits) => $submits->count() == $formSubmits->count());
     }
 
     public function test_hr_coordinator_approved_form_submits_are_not_retrieved(): void
@@ -79,7 +82,7 @@ class FormSubmitControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertViewIs('formSubmits.index');
-        $response->assertViewHas('formSubmits', fn (Collection $submits) => $submits->isEmpty());
+        $response->assertViewHas('formSubmits', fn (LengthAwarePaginator $submits) => $submits->isEmpty());
         
     }
 
@@ -91,7 +94,8 @@ class FormSubmitControllerTest extends TestCase
         $role = Role::create(['name' => 'hr_manager']);
         /** @var Collection */
         $formSubmits = FormSubmit::factory()->count(3)->create([
-            'hr_coordinator_approval' => 'approved'
+            'hr_coordinator_approval' => 'approved',
+            'hr_manager_approval' => 'approved'
         ]);
 
         $user->assignRole($role);
@@ -100,7 +104,7 @@ class FormSubmitControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertViewIs('formSubmits.index');
-        $response->assertViewHas('formSubmits', fn (Collection $submits) => $submits->isEmpty());
+        $response->assertViewHas('formSubmits', fn (LengthAwarePaginator $submits) => $submits->isEmpty());
         
     }
 
@@ -112,11 +116,12 @@ class FormSubmitControllerTest extends TestCase
         $response->assertViewIs('formSubmits.create');
     }
 
-    public function test_anonymous_users_can_create_form_submits(): void
+    public function test_anonymous_users_can_submit_a_form(): void
     {
-        Storage::fake('public');
+        Storage::fake('local');
 
-        $file = UploadedFile::fake()->create('testCV.pdf', 2048);       // 2Mb
+        Nationality::factory()->create(['name' => 'Egyption']);
+        $file = File::create('test.pdf', 100);
 
         $response = $this->post(route('formSubmits.store'), [
             'name' => 'John Doe',
@@ -126,10 +131,15 @@ class FormSubmitControllerTest extends TestCase
             'cv' => $file
         ]);
 
-        Storage::disk('public')->assertExists('/' . $file->hashName());
+        $this->assertDatabaseHas('form_submits', ['name' => 'John Doe']);
+
+        $formSubmit = FormSubmit::first();
+
+        $this->assertNotNull($formSubmit->cv);
+        Storage::disk('local')->assertExists($formSubmit->cv);
+        $this->assertFileEquals($file, Storage::disk('local')->path($formSubmit->cv));
         $response->assertRedirect();
         $response->assertSessionHas('success', 'Your form has been submitted successfully');
-        $this->assertDatabaseCount('form_submits', 1);
     }
 
     public function test_not_permitted_user_cannot_update_a_form_submit(): void
@@ -160,7 +170,7 @@ class FormSubmitControllerTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHas('success', 'The form submit has been approved');
+        $response->assertSessionHas('success', 'The form submit has been approved successfully');
         $this->assertDatabaseHas('form_submits', [
             'id' => $formSubmit->id,
             'hr_coordinator_approval' => 'approved'
@@ -183,7 +193,7 @@ class FormSubmitControllerTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHas('success', 'The form submit has been rejected');
+        $response->assertSessionHas('success', 'The form submit has been rejected successfully');
         $this->assertDatabaseHas('form_submits', [
             'id' => $formSubmit->id,
             'hr_coordinator_approval' => 'rejected'
@@ -208,7 +218,7 @@ class FormSubmitControllerTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHas('success', 'The form submit has been approved');
+        $response->assertSessionHas('success', 'The form submit has been approved successfully');
         $this->assertDatabaseHas('form_submits', [
             'id' => $formSubmit->id,
             'hr_manager_approval' => 'approved'
@@ -233,7 +243,7 @@ class FormSubmitControllerTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHas('success', 'The form submit has been rejected');
+        $response->assertSessionHas('success', 'The form submit has been rejected successfully');
         $this->assertDatabaseHas('form_submits', [
             'id' => $formSubmit->id,
             'hr_manager_approval' => 'rejected'

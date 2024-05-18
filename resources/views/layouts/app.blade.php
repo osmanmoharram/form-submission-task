@@ -78,4 +78,8 @@
             @yield('main')
         </main>
     </div>
+
+    <div class="absolute bottom-10 right-10">
+        <x-flash />
+    </div>
 @endsection

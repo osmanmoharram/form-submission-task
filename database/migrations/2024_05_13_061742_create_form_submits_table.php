@@ -18,8 +18,8 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female']);
             $table->string('nationality');
             $table->text('cv');
-            $table->string('hr_coordinator_approval')->nullable();
-            $table->string('hr_manager_approval')->nullable();
+            $table->string('hr_coordinator_status')->nullable();
+            $table->string('hr_manager_status')->nullable();
             $table->timestamps();
         });
     }

@@ -4,22 +4,30 @@ namespace Tests\Feature\Api;
 
 use App\Models\FormSubmit;
 use App\Models\User;
+use Database\Seeders\RoleSeeder;
+use Illuminate\Database\Events\DatabaseRefreshed;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\Sanctum;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class FormSubmitControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_not_permitted_users_cannot_view_form_submits(): void
     {
         /** @var User */
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get(route('formSubmits.index'));
+        Sanctum::actingAs($user);
+
+        $response = $this->get(route('formSubmits.index'));
 
         $response->assertForbidden();
     }
@@ -28,14 +36,20 @@ class FormSubmitControllerTest extends TestCase
     {
         /** @var User */
         $user = User::factory()->create();
+        Sanctum::actingAs($user, ['hr_coordinator']);
+
         /** @var Role */
-        $role = Role::create(['name' => 'hr_coordinator']);
+        $role = Role::create([
+            'name' => 'hr_coordinator',
+            'guard_name' => 'sanctum'
+        ]);
+
         /** @var Collection */
         $formSubmits = FormSubmit::factory()->count(3)->create();
 
         $user->assignRole($role);
 
-        $response = $this->actingAs($user)->get(route('formSubmits.index'));
+        $response = $this->get(route('formSubmits.index'));
 
         $response->assertOk();
     }
