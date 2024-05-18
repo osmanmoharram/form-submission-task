@@ -11,35 +11,41 @@
 </head>
 
 <body>
-    <div class="max-w-[210mm] mx-auto">
+    <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center px-6">
-            <img class="w-28" src="{{ asset('images/al-dawaa-logo-2.2.png') }}" alt="Al-Dawaa">
-            <span class="text-gray-500/60 text-sm"> Date:&nbsp; {{ today()->toFormattedDateString() }} </span>
+            <img class="w-40" src="{{ asset('images/al-dawaa-logo-2.2.png') }}" alt="Al-Dawaa">
+            <span class="text-gray-500/60 text-base"> Date:&nbsp; {{ today()->toFormattedDateString() }} </span>
         </div>
 
-        <div class="mt-12 flex items-center justify-center">
-            <h1 class="text-gray-800 text-xl tracking-wider">Submits Report</h1>
+        <div class="mt-10 flex items-center justify-center">
+            <h1 class="text-gray-800 text-2xl tracking-wider">Submits Report</h1>
         </div>
 
-        <table class="mt-6 min-w-full divide-y divide-gray-200">
+        <div class="mt-6 flex flex-grow-0">
+            <a class="ml-4" href="{{ route('formSubmits.report.export') }}" title="Export Pdf" target="__blank">
+                <img class="w-10 h-10" src="{{ asset('images/pdf.svg') }}" alt="Pdf">
+            </a>
+        </div>
+
+        <table class="mt-4 min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-normal text-gray-500 tracking-wider">
+                    <th scope="col" class="p-5 text-left text-base font-normal text-gray-500 tracking-wider">
                         Name
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-normal text-gray-500 tracking-wider">
+                    <th scope="col" class="p-5 text-left text-base font-normal text-gray-500 tracking-wider">
                         Date of birth
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-normal text-gray-500 tracking-wider">
+                    <th scope="col" class="p-5 text-left text-base font-normal text-gray-500 tracking-wider">
                         Gender
                     </th>
-                    <th scope="col-span-2" class="px-6 py-3 text-left text-xs font-normal text-gray-500 tracking-wider">
+                    <th scope="col-span-2" class="p-5 text-left text-base font-normal text-gray-500 tracking-wider">
                         Nationality
                     </th>
-                    <th scope="col-span-2" class="px-6 py-3 text-left text-xs font-normal text-gray-500 tracking-wider">
+                    <th scope="col-span-2" class="p-5 text-left text-base font-normal text-gray-500 tracking-wider">
                         HR Coordinator Status
                     </th>
-                    <th scope="col-span-2" class="px-6 py-3 text-left text-xs font-normal text-gray-500 tracking-wider">
+                    <th scope="col-span-2" class="p-5 text-left text-base font-normal text-gray-500 tracking-wider">
                         HR Manager Status
                     </th>
                 </tr>
@@ -47,34 +53,34 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @foreach ($formSubmits as $submit)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-xs text-gray-700">
+                        <td class="p-6 whitespace-nowrap">
+                            <div class="text-base text-gray-700">
                                 {{ ucwords($submit->name) }}
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-xs  text-gray-700">
+                        <td class="p-6 whitespace-nowrap">
+                            <div class="text-base  text-gray-700">
                                 <span>
                                     {{ \Illuminate\Support\Carbon::parse($submit->dob)->toFormattedDateString() }}
                                 </span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-xs  text-gray-700">
+                        <td class="p-6 whitespace-nowrap">
+                            <div class="text-base  text-gray-700">
                                 <span>
                                     {{ ucwords($submit->gender) }}
                                 </span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-xs  text-gray-700">
+                        <td class="p-6 whitespace-nowrap">
+                            <div class="text-base  text-gray-700">
                                 <span>
                                     {{ $submit->nationality }}
                                 </span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-xs  text-gray-700">
+                        <td class="p-6 whitespace-nowrap">
+                            <div class="text-base  text-gray-700">
                                 @if ($status = $submit->hr_coordinator_status)
                                     @if ($status == \App\Enums\SubmitStatusType::Approved->value)
                                         <svg xmlns="http://www.w3.org/2000/svg" class="text-green-500 h-5 w-5"
@@ -96,8 +102,8 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-xs  text-gray-700">
+                        <td class="p-6 whitespace-nowrap">
+                            <div class="text-base  text-gray-700">
                                 @if ($status = $submit->hr_manager_status)
                                     @if ($status == \App\Enums\SubmitStatusType::Approved->value)
                                         <svg xmlns="http://www.w3.org/2000/svg" class="text-green-500 h-5 w-5"

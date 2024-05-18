@@ -53,7 +53,7 @@ class FormSubmitControllerTest extends TestCase
         $role = Role::create(['name' => 'hr_manager']);
         /** @var Collection */
         $formSubmits = FormSubmit::factory()->count(3)->create([
-            'hr_coordinator_approval' => 'approved'
+            'hr_coordinator_status' => 'approved'
         ]);
 
         $user->assignRole($role);
@@ -73,7 +73,7 @@ class FormSubmitControllerTest extends TestCase
         $role = Role::create(['name' => 'hr_coordinator']);
         /** @var Collection */
         $formSubmits = FormSubmit::factory()->count(3)->create([
-            'hr_coordinator_approval' => 'approved'
+            'hr_coordinator_status' => 'approved'
         ]);
 
         $user->assignRole($role);
@@ -94,8 +94,8 @@ class FormSubmitControllerTest extends TestCase
         $role = Role::create(['name' => 'hr_manager']);
         /** @var Collection */
         $formSubmits = FormSubmit::factory()->count(3)->create([
-            'hr_coordinator_approval' => 'approved',
-            'hr_manager_approval' => 'approved'
+            'hr_coordinator_status' => 'approved',
+            'hr_manager_status' => 'approved'
         ]);
 
         $user->assignRole($role);
@@ -166,14 +166,14 @@ class FormSubmitControllerTest extends TestCase
         $user->assignRole($role);
 
         $response = $this->actingAs($user)->put(route('formSubmits.update', $formSubmit), [
-            'approval' => 'approved'
+            'status' => 'approved'
         ]);
 
         $response->assertRedirect();
         $response->assertSessionHas('success', 'The form submit has been approved successfully');
         $this->assertDatabaseHas('form_submits', [
             'id' => $formSubmit->id,
-            'hr_coordinator_approval' => 'approved'
+            'hr_coordinator_status' => 'approved'
         ]);
     }
 
@@ -189,14 +189,14 @@ class FormSubmitControllerTest extends TestCase
         $user->assignRole($role);
 
         $response = $this->actingAs($user)->put(route('formSubmits.update', $formSubmit), [
-            'approval' => 'rejected'
+            'status' => 'rejected'
         ]);
 
         $response->assertRedirect();
         $response->assertSessionHas('success', 'The form submit has been rejected successfully');
         $this->assertDatabaseHas('form_submits', [
             'id' => $formSubmit->id,
-            'hr_coordinator_approval' => 'rejected'
+            'hr_coordinator_status' => 'rejected'
         ]);
     }
 
@@ -208,20 +208,20 @@ class FormSubmitControllerTest extends TestCase
         $role = Role::create(['name' => 'hr_manager']);
         /** @var FormSubmit */
         $formSubmit = FormSubmit::factory()->create([
-            'hr_coordinator_approval' => 'approved'
+            'hr_coordinator_status' => 'approved'
         ]);
 
         $user->assignRole($role);
 
         $response = $this->actingAs($user)->put(route('formSubmits.update', $formSubmit), [
-            'approval' => 'approved'
+            'status' => 'approved'
         ]);
 
         $response->assertRedirect();
         $response->assertSessionHas('success', 'The form submit has been approved successfully');
         $this->assertDatabaseHas('form_submits', [
             'id' => $formSubmit->id,
-            'hr_manager_approval' => 'approved'
+            'hr_manager_status' => 'approved'
         ]);
     }
 
@@ -233,20 +233,20 @@ class FormSubmitControllerTest extends TestCase
         $role = Role::create(['name' => 'hr_manager']);
         /** @var FormSubmit */
         $formSubmit = FormSubmit::factory()->create([
-            'hr_coordinator_approval' => 'approved'
+            'hr_coordinator_status' => 'approved'
         ]);
 
         $user->assignRole($role);
 
         $response = $this->actingAs($user)->put(route('formSubmits.update', $formSubmit), [
-            'approval' => 'rejected'
+            'status' => 'rejected'
         ]);
 
         $response->assertRedirect();
         $response->assertSessionHas('success', 'The form submit has been rejected successfully');
         $this->assertDatabaseHas('form_submits', [
             'id' => $formSubmit->id,
-            'hr_manager_approval' => 'rejected'
+            'hr_manager_status' => 'rejected'
         ]);
     }
 }

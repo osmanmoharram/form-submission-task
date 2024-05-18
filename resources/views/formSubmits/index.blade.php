@@ -4,9 +4,11 @@
     <div class="flex flex-col p-20 text-base">
         @role ('hr_coordinator')
             <div class="flex flex-grow-0">
-                <a href="{{ route('formSubmits.report') }}"
-                    class="text-center px-6 py-3 text-sm rounded-full font-medium bg-[#E20F00] hover:bg-[#CA0D00] text-white cursor-pointer transition-all">
-                    Export PDF
+                <a href="{{ route('formSubmits.report.show') }}"
+                    class="text-center px-6 py-3 text-sm rounded-full font-medium bg-indigo-300 hover:bg-indigo-400 text-white cursor-pointer transition-all"
+                    target="__blank"
+                >
+                    Show Report
                 </a>
             </div>
         @endrole
@@ -112,9 +114,9 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-base ">
                                             <div class="flex flex-wrap items-center justify-left space-x-1">
-                                                <a href="{{ route('formSubmits.download', $submit) }}"
+                                                <a href="{{ route('formSubmits.cv', $submit) }}" target="__blank"
                                                     class="flex items-center justify-center py-2 px-3 text-xs rounded-full font-medium bg-amber-100 hover:bg-amber-200 text-amber-900 cursor-pointer transition-all">
-                                                    Download CV
+                                                    Show CV
                                                 </a>
 
                                                 <form action="{{ route('formSubmits.update', $submit) }}" method="post">

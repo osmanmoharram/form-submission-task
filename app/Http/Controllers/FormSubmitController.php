@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InvalidRoleException;
 use App\Http\Requests\FormSubmitRequest;
 use App\Http\Requests\FormSubmitStoreRequest;
 use App\Models\FormSubmit;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View as FacadesView;
@@ -37,8 +39,13 @@ class FormSubmitController extends Controller
     {
         $this->authorize('viewAny', FormSubmit::class);
 
-        /** @var Collection<int, FormSubmit|null>  */
-        $formSubmits = FormSubmit::paginate();
+        /** @var User */
+        $user = auth()->user();
+
+        /** @var LengthAwarePaginator|Collection<int|string FormSubmit> */
+        $formSubmits = $user->hasRole('hr_coordinator')
+            ? FormSubmit::query()->forHrCoordinator()->paginate()
+            : ($user->hasRole('hr_manager') ? FormSubmit::query()->forHrManager()->paginate() : new InvalidRoleException('You do not have a valid role'));
 
         return view('formSubmits.index', compact('formSubmits'));
     }
@@ -89,7 +96,7 @@ class FormSubmitController extends Controller
         /** @var string|null */
         $status = $user->hasRole('hr_coordinator')
             ? 'hr_coordinator_status'
-            : ($user->hasRole('hr_manager') ? 'hr_manager_status' : null);
+            : ($user->hasRole('hr_manager') ? 'hr_manager_status' : new InvalidRoleException('You do not have a valid role'));
 
         if (is_string($status)) {
             $formSubmit->update([$status => $request->status]);
@@ -98,33 +105,5 @@ class FormSubmitController extends Controller
         }
 
         return back()->with('error', 'The form submit is not ' . $request->status);
-    }
-
-    public function showReport()
-    {
-        $this->authorize('viewReport', FormSubmit::class);
-
-        $formSubmits = FormSubmit::withoutGlobalScope(ForRoleScope::class)->paginate();
-
-        $html = view('formSubmits.report', compact('formSubmits'))->render();
-
-        PDF::loadHTML($html)
-            ->setPaper('a4')
-            ->setOrientation('portrait')
-            ->save('myfile.pdf');
-    }
-
-    /**
-     * Download the stored file
-     * 
-     * @param FormSubmit $formSubmit
-     */
-    public function download(FormSubmit $formSubmit): BinaryFileResponse
-    {
-        try {
-            return response()->download(Storage::path($formSubmit->cv));
-        } catch (\Exception $e) {
-            return back()->with('Sorry, the cv could not be downloaded');
-        }
     }
 }

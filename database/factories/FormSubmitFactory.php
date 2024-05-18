@@ -22,8 +22,8 @@ class FormSubmitFactory extends Factory
             'gender' => 'male',
             'nationality' => 'Saudi',
             'cv' => \Illuminate\Support\Str::random(10) . '.pdf',
-            'hr_coordinator_approval' => null,
-            'hr_manager_approval' => null
+            'hr_coordinator_status' => null,
+            'hr_manager_status' => null
         ];
     }
 }

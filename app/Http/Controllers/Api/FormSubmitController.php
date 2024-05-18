@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\InvalidRoleException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FormSubmitRequest;
 use App\Models\FormSubmit;
@@ -10,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Browsershot\Browsershot;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FormSubmitController extends Controller
@@ -26,10 +28,10 @@ class FormSubmitController extends Controller
         /** @var User */
         $user = auth()->user();
 
-        /** @var Collection<int, FormSubmit|null>  */
-        $formSubmits = $user->hasRole('hr_coordinator')
-            ? FormSubmit::query()->forHRCoordinator()->paginate() 
-            : ($user->hasRole('hr_manager') ? FormSubmit::query()->forHRManager()->paginate() : collect());
+        /** @var LengthAwarePaginator|Collection<int|string FormSubmit> */
+        $formSubmits = $user->tokenCan('coordinate')
+            ? FormSubmit::query()->forHrCoordinator()->paginate()
+            : ($user->tokenCan('manage') ? FormSubmit::query()->forHrManager()->paginate() : new InvalidRoleException('You do not have a valid role'));
 
         return response()->json(['formSubmits' => $formSubmits]);
     }
@@ -55,24 +57,26 @@ class FormSubmitController extends Controller
     {
         $this->authorize('update', $formSubmit);
 
-        $request->validate(['approval' => 'required|in:approved,rejected']);
+        $request->validate(['status' => 'required|in:approved,rejected']);
 
         /** @var User */
         $user = auth()->user();
         
         /** @var string|null */
-        $approval = $user->hasRole('hr_coordinator')
-            ? 'hr_coordinator_approval'
-            : ($user->hasRole('hr_manager') ? 'hr_manager_approval' : null);
+        $status = $user->tokenCan('coordinate')
+            ? 'hr_coordinator_status'
+            : ($user->tokenCan('manage') ? 'hr_manager_status' : new InvalidRoleException('You do not have a valid role'));
 
-        if (is_string($approval)) {
-            $formSubmit->update([$approval => $request->approval]);
+        if (is_string($status)) {
+            $formSubmit->update([$status => $request->status]);
 
-            return response()->json(['success' => 'The form submit has been ' . $request->approval . ' successfully'], 200);
+            return response()->json(['success' => 'The form submit has been ' . $request->status . ' successfully'], 200);
         }
 
-        return response()->json(['error' => 'The form submit is not ' . $request->approval]);
+        return response()->json(['error' => 'The form submit is not ' . $request->status]);
     }
+
+    
 
     /**
      * Download the stored file
